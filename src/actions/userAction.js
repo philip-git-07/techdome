@@ -1,5 +1,4 @@
 import { LOGIN_SUCCESS, LOAD_SUCCESS, LOGOUT_SUCCESS, LOGIN_REQUEST, LOAD_REQUEST, LOAD_FAIL } from "../constants/userConstants";
-import { registerUser } from  '../../actions/userAction' ;
 import axios from "../apiConfig/api";
 
 export const registerUser = (userData, navigate, fun) => async () => {
