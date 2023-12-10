@@ -1,8 +1,6 @@
 import { ADD_BLOG, BLOG_REQUEST, BLOG_SUCCESS, ADD_NEW_BLOG, DEL_BLOG, UPDATE_NEW_BLOG } from "../constants/blogConstants";
 import axios from "axios";
 import axiosNew from "../apiConfig/api";
-import { registerUser } from  '../../actions/userAction' ;
-
 
 
 
