@@ -18,10 +18,14 @@ jobs:
         with:
           node-version: '14'
 
+      - name: Update npm and Browserslist database
+        run: |
+          npm install -g npm@latest
+          npx update-browserslist-db@latest
+
       - name: Install dependencies
         run: |
           npm ci
-          npx update-browserslist-db@latest
 
       - name: Build
         run: npm run build
