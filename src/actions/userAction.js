@@ -1,57 +1,53 @@
-import { LOGIN_SUCCESS, LOGIN_REQUEST, LOAD_REQUEST, LOAD_SUCCESS, LOAD_FAIL, LOGOUT_SUCCESS } from "../constants/userConstants";
+import { LOGIN_SUCCESS, LOAD_SUCCESS, LOGOUT_SUCCESS } from "../constants/userConstants";
 import axios from "../apiConfig/api";
 
-export const registeruser = (userData, navigate, fun) => async () => {
+export const registerUser = (userData, navigate, fun) => async () => {
     try {
-        const config = { headers: { "Conetnt-Type": "application/json" } };
+        const config = { headers: { "Content-Type": "application/json" } };
         const res = await axios.post("/register", userData, config);
-        if (res.status == 201) {
+        if (res.status === 201) {
             navigate("/login");
         } else {
-            window.alert("somthing went wrong");
+            window.alert("Something went wrong");
         }
-
         fun(null);
-
     } catch (error) {
-        fun(error.response.data.message)
-        console.log(error);
+        fun(error.response.data.message);
+        console.error(error);
     }
-}
+};
 
 export const loginUser = (userData, fun) => async (dispatch) => {
     try {
-        const config = { headers: { "Conetnt-Type": "application/json" } };
+        const config = { headers: { "Content-Type": "application/json" } };
         const res = await axios.post("/login", userData, config);
-        if (res.status == 200) {
+        if (res.status === 200) {
             localStorage.setItem("userToken", res.data.token);
             dispatch({ type: LOGIN_SUCCESS, payload: res.data.user });
         } else {
-            window.alert("somthing went wrong");
+            window.alert("Something went wrong");
         }
-
         fun(null);
-
     } catch (error) {
         fun(error.response.data.message);
-        console.log(error);
+        console.error(error);
     }
-}
+};
 
 export const loadUser = () => async (dispatch) => {
     try {
         const token = localStorage.getItem("userToken");
         if (token) {
-            const config = { headers: { "Conetnt-Type": "application/json" } };
+            const config = { headers: { "Content-Type": "application/json" } };
             const res = await axios.post("/get_user_data", { token }, config);
             dispatch({ type: LOAD_SUCCESS, payload: res.data.user });
         } else {
-            console.log("token is not present..!");
+            console.log("Token is not present!");
         }
     } catch (error) {
-        console.log(error);
+        console.error(error);
     }
-}
+};
 
 export const logoutUser = (navigate) => async (dispatch) => {
     try {
@@ -59,7 +55,6 @@ export const logoutUser = (navigate) => async (dispatch) => {
         dispatch({ type: LOGOUT_SUCCESS });
         navigate("/login");
     } catch (error) {
-        console.log(error);
+        console.error(error);
     }
-}
-
+};
