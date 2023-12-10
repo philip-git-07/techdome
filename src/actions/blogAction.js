@@ -1,78 +1,60 @@
-import { ADD_BLOG, BLOG_REQUEST, BLOG_SUCCESS, ADD_NEW_BLOG, DEL_BLOG, UPDATE_NEW_BLOG } from "../constants/blogConstants";
-import axios from "axios";
-import axiosNew from "../apiConfig/api";
+import { LOGIN_SUCCESS, LOAD_SUCCESS, LOGOUT_SUCCESS } from "../constants/userConstants";
+import axios from "../apiConfig/api";
 
-const uploadData = async (data, dispatch) => {
-  try {
-    const config = { headers: { "Content-Type": "application/json" } };
-    const res = await axiosNew.post("/add_blog", data, config);
-    dispatch({ type: ADD_NEW_BLOG, payload: res.data.blog });
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-const updateData = async (data, dispatch) => {
-  try {
-    const config = { headers: { "Content-Type": "application/json" } };
-    const res = await axiosNew.post("/update_blog", data, config);
-    dispatch({ type: UPDATE_NEW_BLOG, payload: res.data.newBlog });
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-export const addBlog = (blogData) => async (dispatch) => {
-  try {
-    dispatch({ type: BLOG_REQUEST });
-    const data = new FormData();
-    data.append("file", blogData.img);
-    data.append("upload_preset", "myappintern");
-    const { data: imageData } = await axios.post("https://api.cloudinary.com/v1_1/dplwvxqum/image/upload", data);
-    uploadData({ ...blogData, img: imageData.url, public_id: imageData.public_id }, dispatch);
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-export const deleteBlog = (blogData) => async (dispatch) => {
-  try {
-    dispatch({ type: DEL_BLOG, payload: blogData._id });
-    const config = { headers: { "Content-Type": "application/json" } };
-    const { data } = await axiosNew.post("/delete_blog", blogData, config);
-    console.log(data);
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-export const updateBlog = (blogData) => async (dispatch) => {
-  try {
-    dispatch({ type: BLOG_REQUEST });
-    const config = { headers: { "Content-Type": "application/json" } };
-
-    if (blogData.imgChange) {
-      const del_id = blogData.public_id;
-      const data = new FormData();
-      data.append("file", blogData.img);
-      data.append("upload_preset", "myappintern");
-      const { data: imageData } = await axios.post("https://api.cloudinary.com/v1_1/dplwvxqum/image/upload", data);
-      updateData({ ...blogData, img: imageData.url, public_id: imageData.public_id, del_id }, dispatch);
-    } else {
-      const { data } = await axiosNew.post("/update_blog", blogData, config);
-      dispatch({ type: UPDATE_NEW_BLOG, payload: data.newBlog });
+export const registerUser = (userData, navigate, fun) => async () => {
+    try {
+        const config = { headers: { "Content-Type": "application/json" } };
+        const res = await axios.post("/register", userData, config);
+        if (res.status === 201) {
+            navigate("/login");
+        } else {
+            window.alert("Something went wrong");
+        }
+        fun(null);
+    } catch (error) {
+        fun(error.response.data.message);
+        console.error(error);
     }
-  } catch (error) {
-    console.log(error);
-  }
 };
 
-export const getBlogs = () => async (dispatch) => {
-  try {
-    dispatch({ type: BLOG_REQUEST });
-    const { data } = await axiosNew.get("/get_blog");
-    dispatch({ type: BLOG_SUCCESS, payload: data.blogs });
-  } catch (error) {
-    console.log(error);
-  }
+export const loginUser = (userData, fun) => async (dispatch) => {
+    try {
+        const config = { headers: { "Content-Type": "application/json" } };
+        const res = await axios.post("/login", userData, config);
+        if (res.status === 200) {
+            localStorage.setItem("userToken", res.data.token);
+            dispatch({ type: LOGIN_SUCCESS, payload: res.data.user });
+        } else {
+            window.alert("Something went wrong");
+        }
+        fun(null);
+    } catch (error) {
+        fun(error.response.data.message);
+        console.error(error);
+    }
+};
+
+export const loadUser = () => async (dispatch) => {
+    try {
+        const token = localStorage.getItem("userToken");
+        if (token) {
+            const config = { headers: { "Content-Type": "application/json" } };
+            const res = await axios.post("/get_user_data", { token }, config);
+            dispatch({ type: LOAD_SUCCESS, payload: res.data.user });
+        } else {
+            console.log("Token is not present!");
+        }
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+export const logoutUser = (navigate) => async (dispatch) => {
+    try {
+        localStorage.removeItem("userToken");
+        dispatch({ type: LOGOUT_SUCCESS });
+        navigate("/login");
+    } catch (error) {
+        console.error(error);
+    }
 };
