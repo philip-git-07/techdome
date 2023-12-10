@@ -3,7 +3,7 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main
+      - main  # or the branch you want to trigger the workflow
 
 jobs:
   build:
@@ -19,9 +19,7 @@ jobs:
           node-version: '14'
 
       - name: Install dependencies
-        run: |
-          npm ci
-          npx update-browserslist-db@latest
+        run: npm install
 
       - name: Build
         run: npm run build
@@ -30,8 +28,11 @@ jobs:
         run: npm test
 
       - name: Deploy
+        # Define your deployment steps here
+        # This could involve deploying to a hosting service like Netlify, Vercel, or GitHub Pages
+        # For example, to deploy to GitHub Pages:
         run: |
-          git config --global user.email "philipthomaspattettu@gmai.com"
+          git config --global user.email "philipthomaspattettu@gmail.com"
           git config --global user.name "philip-git-07"
           npm install -g gh-pages
           npm run build
