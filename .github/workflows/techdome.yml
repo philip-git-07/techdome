@@ -20,7 +20,7 @@ jobs:
 
       - name: Update npm and Browserslist database
         run: |
-          npm install -g npm@latest
+          npm install -g npm@7
           npx update-browserslist-db@latest
 
       - name: Install dependencies
